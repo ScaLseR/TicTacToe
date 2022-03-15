@@ -2,6 +2,7 @@ import copy
 import random
 EMPTY_SYMBOL = ' '
 
+
 class Board:
     def __init__(self, n, m):
         self.n = n
@@ -39,7 +40,7 @@ class Board:
             return True
 
     # подсчитываем количество определенных символов по диагоналям
-    def is_win_diagon(self, x, y, symbol, board):
+    def is_win_diagon(self, symbol, board):
         #если n = m смотрим только основную и побочную диагональ
         if self.n == self.m:
             mdiag = []; sdiag = []
@@ -59,17 +60,16 @@ class Board:
 
     #основная проверка на выйгрыш
     def is_win(self, x, y, symbol, board):
-        if self.is_win_row(x, symbol, board) or self.is_win_column(y, symbol, board) or self.is_win_diagon(x, y, symbol, board):
-            #self.viev_board()
+        if self.is_win_row(x, symbol, board) or self.is_win_column(y, symbol, board) or self.is_win_diagon(symbol, board):
             return True
 
     #размещение символа на игровой доске
-    def put_symbol(self, x, y, symbol, board):
+    def put_symbol(self, x, y, symbol):
         if x >= self.n or y >= self.n:
             print('Введены координаты за пределами поля. Введите корректные координаты!')
             return False
         else:
-            if self.is_empty(x,y):
+            if self.is_empty(x, y):
                 self.board[x][y] = symbol
                 if self.is_win(x, y, symbol, self.board):
                     self.viev_board(self.board)
@@ -79,7 +79,7 @@ class Board:
                     exit()
                 else:
                     count = self.count_empty_cells()
-                    if len(count) <= 2:
+                    if len(count) <= 1:
                         self.viev_board(self.board)
                         print('*' * 10)
                         print('* Ничья! *')
@@ -110,6 +110,19 @@ class Board:
                     count.append([i, j])
         return count
 
+        # получаем список кординат свободных клеток
+    def count_empty_corner(self):
+        count = []
+        if self.n == 3 and (self.is_empty(0, 0)):
+            count.append([0, 0])
+        if self.n == 3 and (self.is_empty(0, 2)):
+            count.append([0, 2])
+        if self.n == 3 and (self.is_empty(2, 0)):
+            count.append([2, 0])
+        if self.n == 3 and (self.is_empty(2, 2)):
+            count.append([2, 2])
+        return count
+
     #проверяем является ли следующий ход победным
     def if_win_hod(self, symbol):
         hod = []
@@ -119,11 +132,11 @@ class Board:
                 if self.is_empty(i, j):
                     c_board[i][j] = symbol
                     if self.is_win(i, j, symbol, c_board):
-                        hod.append([i,j])
+                        hod.append([i, j])
         return hod
 
     #вычисляем координаты хода АИ
-    def AI_get_xy(self, symbol, board):
+    def AI_get_xy(self, symbol):
         if symbol == 'X':
             pl_symbol = 'O'
         else:
@@ -140,21 +153,16 @@ class Board:
         if self.n == 3 and self.is_empty(1, 1):
             return 1, 1
         # если играем на поле 3*3 первым делом занимаем углы
-        if self.n == 3 and (self.is_empty(0, 0)):
-            return 0, 0
-        elif self.n == 3 and (self.is_empty(0, 2)):
-            return 0, 2
-        elif self.n == 3 and (self.is_empty(2, 0)):
-            return 2, 0
-        elif self.n == 3 and (self.is_empty(2, 2)):
-            return 2, 2
+        hod = self.count_empty_corner()
+        if len(hod) > 0:
+            pos = random.randint(0, len(hod) - 1)
+            return hod[pos][0], hod[pos][1]
         #ходим на любую свободную клетку
         hod = self.count_empty_cells()
-        if len(hod) <= 2:
-            print('Ничья!')
-        else:
+        if len(hod) > 0:
             pos = random.randint(0, len(hod)-1)
             return hod[pos][0], hod[pos][1]
+
 
 class Player:
     def __init__(self, symbol, board):
@@ -175,9 +183,10 @@ class Player:
     #ход игрока, отправка символа игрока на доску
     def p_move(self):
         rez = False
-        while rez != True:
-            x ,y = self.valid_coord()
+        while not rez:
+            x, y = self.valid_coord()
             rez = self.board.put_symbol(x, y, self.symbol, self.board)
+
 
 class AIPlayer:
     def __init__(self, symbol, board):
@@ -186,17 +195,19 @@ class AIPlayer:
 
     def p_move(self):
         print('---Ход ИИ---')
-        x ,y = self.board.AI_get_xy(self.symbol, self.board)
-        rez = self.board.put_symbol(x, y, self.symbol, self.board)
+        x, y = self.board.AI_get_xy(self.symbol)
+        _ = self.board.put_symbol(x, y, self.symbol, self.board)
+
 
 class Game:
     players = []
-    #обработка ввода правильных цифровых значений    
-    def valid_input_dig(self, text, n = 0):
+
+    #обработка ввода правильных цифровых значений
+    def valid_input_dig(self, text, n=0):
         while True:
             vvod = input(text)
             if vvod.isdigit() and int(vvod) >= n:
-                return  int(vvod)
+                return int(vvod)
             else:
                 if n == 0:
                     print('Введите число!')
@@ -206,11 +217,11 @@ class Game:
     #обработка ввода правильных буквенных ответов на диалоги
     def valid_input_let(self, text, zn1, zn2):
         while True:
-            vvod = input(text + '"' + zn1 + '" или "'+ zn2 + '": ')
+            vvod = input(text + '"' + zn1 + '" или "' + zn2 + '": ')
             if vvod.isalpha() and (vvod == zn1 or vvod == zn2):
                 return vvod
             else:
-                print('Введите ' + '"' + zn1 + '" или "'+ zn2 + '"!')
+                print('Введите ' + '"' + zn1 + '" или "' + zn2 + '"!')
 
     #основная конфигурация игры
     def config(self):
@@ -246,14 +257,14 @@ class Game:
                 symbol = input(f'Введите символ игрока {i+2} : ')
                 pl = Player(symbol, board)
                 game.add_players(pl)
-        game.start(n)
+        game.start()
 
     #добавление игроков
     def add_players(self, player):
         self.players.append(player)
 
     #старт игры
-    def start(self, n):
+    def start(self):
         while True:
             for player in self.players:
                 player.p_move()
@@ -261,7 +272,3 @@ class Game:
 if __name__ == '__main__':
     game = Game()
     game.config()
-
-
-
-
