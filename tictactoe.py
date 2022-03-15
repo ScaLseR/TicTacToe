@@ -10,10 +10,10 @@ class Board:
 
     #отображение игровой доски в консоли
     def viev_board(self, board):
-        for i in range (self.n):
+        for i in range(self.n):
             print('-' * (self.n * 3 + (self.n + 1)))
-            for j in range (self.n):
-                print ('|', board[i][j], end = ' ')
+            for j in range(self.n):
+                print('|', board[i][j], end=' ')
             print('|')
         print('-' * (self.n * 3 + (self.n + 1)))
 
@@ -43,7 +43,7 @@ class Board:
         #если n = m смотрим только основную и побочную диагональ
         if self.n == self.m:
             mdiag = []; sdiag = []
-            for i in range (self.n):
+            for i in range(self.n):
                 mdiag.append(board[i][i])
                 sdiag.append(board[i][self.n - i - 1])
             if self.count_symbol_list(mdiag, symbol) or self.count_symbol_list(sdiag, symbol):
@@ -125,7 +125,7 @@ class Board:
     #вычисляем координаты хода АИ
     def AI_get_xy(self, symbol, board):
         if symbol == 'X':
-            pl_symbol ='O'
+            pl_symbol = 'O'
         else:
             pl_symbol = 'X'
         #проверка на возможность победы ИИ
@@ -139,6 +139,15 @@ class Board:
         #если играем на поле 3*3 и не занят центр, то занимаем
         if self.n == 3 and self.is_empty(1, 1):
             return 1, 1
+        # если играем на поле 3*3 первым делом занимаем углы
+        if self.n == 3 and (self.is_empty(0, 0)):
+            return 0, 0
+        elif self.n == 3 and (self.is_empty(0, 2)):
+            return 0, 2
+        elif self.n == 3 and (self.is_empty(2, 0)):
+            return 2, 0
+        elif self.n == 3 and (self.is_empty(2, 2)):
+            return 2, 2
         #ходим на любую свободную клетку
         hod = self.count_empty_cells()
         if len(hod) <= 2:
