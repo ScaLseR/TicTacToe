@@ -191,7 +191,7 @@ class AIPlayer:
 
 class Game:
     players = []
-    #обработка ввода правильных буквенных ответов на диалоги
+    #обработка ввода правильных цифровых значений    
     def valid_input_dig(self, text, n = 0):
         while True:
             vvod = input(text)
@@ -203,7 +203,7 @@ class Game:
                 elif n == 2:
                     print('Введите число игроков 2 и больше!')
 
-    #обработка ввода правильных цифровых значений
+    #обработка ввода правильных буквенных ответов на диалоги
     def valid_input_let(self, text, zn1, zn2):
         while True:
             vvod = input(text + '"' + zn1 + '" или "'+ zn2 + '": ')
