@@ -25,7 +25,7 @@ class Board:
             print('Победил игрок ', rez)
             exit()
 
-    # подсчитываем количество определенных символов подряд в списке всех диагоналей
+    #подсчитываем количество определенных символов подряд в списке всех диагоналей
     def count_sybmol_diag(self, list_diag):
         for diag in list_diag:
             rez = self.count_symbol_list(diag)
@@ -72,7 +72,6 @@ class Board:
                     return rez_m
                 if rez_s:
                     return rez_s
-
         #смотрим все возможные диагонали
         if self.n > self.m:
             diag_dn = []; diag_up = []
@@ -182,7 +181,6 @@ class Board:
                         qx = i
                         qy = j
                     self.put_symbol(i, j, EMPTY_SYMBOL, c_board)
-
         return (minv, qx, qy)
 
     #проверка правильности введенных игроком координат
