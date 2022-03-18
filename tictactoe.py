@@ -18,6 +18,10 @@ class Board:
             print('|')
         print('-' * (self.n * 3 + (self.n + 1)))
         rez = self.is_win(self.board)
+
+    #проверка на завершение игры
+    def end_game(self):
+        rez = self.is_win(self.board)
         if rez == EMPTY_SYMBOL:
             print('Ничья!')
             exit()
@@ -300,6 +304,7 @@ class Game:
             for player in self.players:
                 player.p_move()
                 board.viev_board()
+                board.end_game()
 
 if __name__ == '__main__':
     game = Game()
