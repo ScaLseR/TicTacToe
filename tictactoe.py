@@ -129,8 +129,8 @@ class Board:
             pl_symbol = 'O'
         else:
             pl_symbol = 'X'
-
-        maxv = -2
+        #print('--Max--')
+        max_v = -2
         px = None
         py = None
         result = self.is_win(c_board)
@@ -146,12 +146,12 @@ class Board:
                 if self.is_empty(i, j, c_board):
                     c_board[i][j] = ai_symbol
                     (m, min_i, min_j) = self.min(pl_symbol, c_board)
-                    if m > maxv:
-                        maxv = m
+                    if m > max_v:
+                        max_v = m
                         px = i
                         py = j
                     self.put_symbol(i, j, EMPTY_SYMBOL, c_board)
-        return (maxv, px, py)
+        return (max_v, px, py)
 
     #минимизация для игрока - человека
     def min(self, pl_symbol, c_board):
@@ -159,8 +159,8 @@ class Board:
             ai_symbol = 'O'
         else:
             ai_symbol = 'X'
-
-        minv = 2
+        #print('--Min--')
+        min_v = 2
         qx = None
         qy = None
         result = self.is_win(c_board)
@@ -176,27 +176,30 @@ class Board:
                 if self.is_empty(i, j, c_board):
                     c_board[i][j] = pl_symbol
                     (m, max_i, max_j) = self.max(ai_symbol, c_board)
-                    if m < minv:
-                        minv = m
+                    if m < min_v:
+                        min_v = m
                         qx = i
                         qy = j
                     self.put_symbol(i, j, EMPTY_SYMBOL, c_board)
-        return (minv, qx, qy)
+        return (min_v, qx, qy)
 
     #проверка правильности введенных игроком координат
     def valid_coord(self, symbol, human, *coord):
         if human:
-            x, y = input('Введите координаты (X,Y) - куда поставим: ' + symbol + '? ').split()
-            x = int(x); y = int(y)
-            if x < 0 or x > self.n or y < 0 or y > self.n:
-                print('Введены координаты вне области игрового поля')
-                return False
-            elif not self.is_empty(x, y, self.board):
-                print('Данная клетка занята')
-                return False
-            else:
-                self.put_symbol(x, y, symbol, self.board)
-                return True
+            try:
+                x, y = input('Введите координаты (X,Y) - куда поставим: ' + symbol + '? ').split()
+                x = int(x); y = int(y)
+                if x < 0 or x > self.n or y < 0 or y > self.n:
+                    print('Введены координаты вне области игрового поля')
+                    return False
+                elif not self.is_empty(x, y, self.board):
+                    print('Данная клетка занята')
+                    return False
+                else:
+                    self.put_symbol(x, y, symbol, self.board)
+                    return True
+            except:
+                print('Введите координаты: число пробел число.')
         else:
             self.put_symbol(coord[0], coord[1], symbol, self.board)
 
