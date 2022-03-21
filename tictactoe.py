@@ -133,8 +133,7 @@ class Board:
             pl_symbol = 'O'
         else:
             pl_symbol = 'X'
-        #print('--Max--')
-        max_v = -2
+        max_v = (1 - self.n)
         px = None
         py = None
         result = self.is_win(c_board)
@@ -163,8 +162,7 @@ class Board:
             ai_symbol = 'O'
         else:
             ai_symbol = 'X'
-        #print('--Min--')
-        min_v = 2
+        min_v = self.n - 1
         qx = None
         qy = None
         result = self.is_win(c_board)
@@ -192,7 +190,8 @@ class Board:
         if human:
             try:
                 x, y = input('Введите координаты (X,Y) - куда поставим: ' + symbol + '? ').split()
-                x = int(x); y = int(y)
+                x = int(x)
+                y = int(y)
                 if x < 0 or x > self.n or y < 0 or y > self.n:
                     print('Введены координаты вне области игрового поля')
                     return False
