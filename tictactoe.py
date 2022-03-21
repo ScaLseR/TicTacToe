@@ -10,14 +10,17 @@ class Board:
         self.board = [[EMPTY_SYMBOL] * n for i in range(n)]
 
     #отображение игровой доски в консоли
-    def viev_board(self):
+    def viev_board(self, *board):
+        if len(board) == 0:
+            board = self.board
+        else:
+            board = board[0]
         for i in range(self.n):
             print('-' * (self.n * 3 + (self.n + 1)))
             for j in range(self.n):
-                print('|', self.board[i][j], end=' ')
+                print('|', board[i][j], end=' ')
             print('|')
         print('-' * (self.n * 3 + (self.n + 1)))
-        rez = self.is_win(self.board)
 
     #проверка на завершение игры
     def end_game(self):
@@ -66,7 +69,8 @@ class Board:
     def is_win_diagon(self, board):
         #если n = m смотрим только основную и побочную диагональ
         if self.n == self.m:
-            mdiag = []; sdiag = []
+            mdiag = []
+            sdiag = []
             for i in range(self.n):
                 mdiag.append(board[i][i])
                 sdiag.append(board[i][self.n - i - 1])
@@ -133,7 +137,7 @@ class Board:
             pl_symbol = 'O'
         else:
             pl_symbol = 'X'
-        max_v = (1 - self.n)
+        max_v = (1 - self.m)
         px = None
         py = None
         result = self.is_win(c_board)
@@ -143,11 +147,11 @@ class Board:
             return (1, 0, 0)
         elif result == EMPTY_SYMBOL:
             return (0, 0, 0)
-
         for i in range(self.n):
             for j in range(self.n):
                 if self.is_empty(i, j, c_board):
                     c_board[i][j] = ai_symbol
+                    #self.viev_board(c_board)
                     (m, min_i, min_j) = self.min(pl_symbol, c_board)
                     if m > max_v:
                         max_v = m
@@ -162,21 +166,21 @@ class Board:
             ai_symbol = 'O'
         else:
             ai_symbol = 'X'
-        min_v = self.n - 1
+        min_v = self.m - 1
         qx = None
         qy = None
         result = self.is_win(c_board)
         if result == pl_symbol:
             return (-1, 0, 0)
         elif result == ai_symbol:
-            return (1, 0, 0)
+            return (1 , 0, 0)
         elif result == EMPTY_SYMBOL:
             return (0, 0, 0)
-
         for i in range(self.n):
             for j in range(self.n):
                 if self.is_empty(i, j, c_board):
                     c_board[i][j] = pl_symbol
+                    #self.viev_board(c_board)
                     (m, max_i, max_j) = self.max(ai_symbol, c_board)
                     if m < min_v:
                         min_v = m
