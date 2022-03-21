@@ -1,4 +1,5 @@
-import copy
+from copy import deepcopy
+
 EMPTY_SYMBOL = ' '
 
 
@@ -9,8 +10,8 @@ class Board:
         self.m = m
         self.board = [[EMPTY_SYMBOL] * n for i in range(n)]
 
-    #отображение игровой доски в консоли
-    def viev_board(self, *board):
+    # отображение игровой доски в консоли
+    def view_board(self, *board):
         if len(board) == 0:
             board = self.board
         else:
@@ -22,7 +23,7 @@ class Board:
             print('|')
         print('-' * (self.n * 3 + (self.n + 1)))
 
-    #проверка на завершение игры
+    # проверка на завершение игры
     def end_game(self):
         rez = self.is_win(self.board)
         if rez == EMPTY_SYMBOL:
@@ -32,33 +33,33 @@ class Board:
             print('Победил игрок ', rez)
             exit()
 
-    #подсчитываем количество определенных символов подряд в списке всех диагоналей
-    def count_sybmol_diag(self, list_diag):
+    # подсчитываем количество определенных символов подряд в списке всех диагоналей
+    def count_symbol_diag(self, list_diag):
         for diag in list_diag:
             rez = self.count_symbol_list(diag)
             if rez:
                 return rez
 
-    #подсчитываем количество одинаковых символов подряд в списке
+    # подсчитываем количество одинаковых символов подряд в списке
     def count_symbol_list(self, list_symbol):
         count = 1
-        for i in range(len(list_symbol)-1):
+        for i in range(len(list_symbol) - 1):
             if list_symbol[i] != EMPTY_SYMBOL:
-                if list_symbol[i+1] == list_symbol[i]:
+                if list_symbol[i + 1] == list_symbol[i]:
                     count += 1
                     if count == self.m:
                         return list_symbol[i]
                 else:
                     count = 1
 
-    #пподсчитываем количество определенных символов подряд по строкам
+    # пподсчитываем количество определенных символов подряд по строкам
     def is_win_row(self, board):
         for i in range(self.n):
             rez = self.count_symbol_list(board[i])
             if rez:
                 return rez
 
-    #подсчитываем количество одинаковых символов подряд по столбцам
+    # подсчитываем количество одинаковых символов подряд по столбцам
     def is_win_column(self, board):
         for i in range(self.n):
             rez = self.count_symbol_list([col[i] for col in board])
@@ -66,38 +67,41 @@ class Board:
                 return rez
 
     # подсчитываем количество одинаковых символов подряд по диагоналям
-    def is_win_diagon(self, board):
-        #если n = m смотрим только основную и побочную диагональ
+    def is_win_diag(self, board):
+        # если n = m смотрим только основную и побочную диагональ
         if self.n == self.m:
-            mdiag = []
-            sdiag = []
+            m_diag = []
+            s_diag = []
             for i in range(self.n):
-                mdiag.append(board[i][i])
-                sdiag.append(board[i][self.n - i - 1])
-                rez_m = self.count_symbol_list(mdiag)
-                rez_s = self.count_symbol_list(sdiag)
+                m_diag.append(board[i][i])
+                s_diag.append(board[i][self.n - i - 1])
+                rez_m = self.count_symbol_list(m_diag)
+                rez_s = self.count_symbol_list(s_diag)
                 if rez_m:
                     return rez_m
                 if rez_s:
                     return rez_s
-        #смотрим все возможные диагонали
+        # смотрим все возможные диагонали
         if self.n > self.m:
-            diag_dn = []; diag_up = []
+            diag_dn = []
+            diag_up = []
             for p in range(2 * self.n - 1):
-                diag_dn.append([board[p - q][q] for q in range(max(0, p - self.n + 1), min(p, self.n - 1) + 1)])
-                diag_up.append([board[self.n - p + q - 1][q] for q in range(max(0, p - self.n + 1), min(p, self.n - 1) + 1)])
-                rez_dn = self.count_sybmol_diag(diag_dn)
-                rez_up = self.count_sybmol_diag(diag_up)
+                diag_dn.append([board[p - q][q] for q in range(max(0, p - self.n + 1),
+                                                               min(p, self.n - 1) + 1)])
+                diag_up.append([board[self.n - p + q - 1][q] for q in range(max(0, p - self.n + 1),
+                                                                            min(p, self.n - 1) + 1)])
+                rez_dn = self.count_symbol_diag(diag_dn)
+                rez_up = self.count_symbol_diag(diag_up)
                 if rez_dn:
                     return rez_dn
                 if rez_up:
                     return rez_up
 
-    #основная проверка на выйгрыш
+    # основная проверка на выйгрыш
     def is_win(self, board):
         row = self.is_win_row(board)
         col = self.is_win_column(board)
-        diag = self.is_win_diagon(board)
+        diag = self.is_win_diag(board)
         if row:
             return row
         elif col:
@@ -108,21 +112,21 @@ class Board:
             return None
         return EMPTY_SYMBOL
 
-    #размещение символа на игровой доске
+    # размещение символа на игровой доске
     def put_symbol(self, x, y, symbol, board):
-         board[x][y] = symbol
+        board[x][y] = symbol
 
-    #проверка клетки на наличие символов
+    # проверка клетки на наличие символов
     def is_empty(self, x, y, board):
         if board[x][y] == EMPTY_SYMBOL:
             return True
 
-    #получение копии игровой доски
+    # получение копии игровой доски
     def board_copy(self):
-        c_board = copy.deepcopy(self.board)
+        c_board = deepcopy(self.board)
         return c_board
 
-    #получаем список кординат свободных клеток
+    # получаем список кординат свободных клеток
     def count_empty_cells(self, board):
         count = []
         for i in range(self.n):
@@ -131,65 +135,59 @@ class Board:
                     count.append([i, j])
         return count
 
-    #максимизация для ai
+    # максимизация для ai
     def max(self, ai_symbol, c_board):
         if ai_symbol == 'X':
             pl_symbol = 'O'
         else:
             pl_symbol = 'X'
         max_v = (1 - self.m)
-        px = None
-        py = None
         result = self.is_win(c_board)
         if result == pl_symbol:
-            return (-1, 0, 0)
+            return -1, 0, 0
         elif result == ai_symbol:
-            return (1, 0, 0)
+            return 1, 0, 0
         elif result == EMPTY_SYMBOL:
-            return (0, 0, 0)
+            return 0, 0, 0
         for i in range(self.n):
             for j in range(self.n):
                 if self.is_empty(i, j, c_board):
                     c_board[i][j] = ai_symbol
-                    #self.viev_board(c_board)
                     (m, min_i, min_j) = self.min(pl_symbol, c_board)
                     if m > max_v:
                         max_v = m
                         px = i
                         py = j
                     self.put_symbol(i, j, EMPTY_SYMBOL, c_board)
-        return (max_v, px, py)
+        return max_v, px, py
 
-    #минимизация для игрока - человека
+    # минимизация для игрока - человека
     def min(self, pl_symbol, c_board):
         if pl_symbol == 'X':
             ai_symbol = 'O'
         else:
             ai_symbol = 'X'
         min_v = self.m - 1
-        qx = None
-        qy = None
         result = self.is_win(c_board)
         if result == pl_symbol:
-            return (-1, 0, 0)
+            return -1, 0, 0
         elif result == ai_symbol:
-            return (1 , 0, 0)
+            return 1, 0, 0
         elif result == EMPTY_SYMBOL:
-            return (0, 0, 0)
+            return 0, 0, 0
         for i in range(self.n):
             for j in range(self.n):
                 if self.is_empty(i, j, c_board):
                     c_board[i][j] = pl_symbol
-                    #self.viev_board(c_board)
                     (m, max_i, max_j) = self.max(ai_symbol, c_board)
                     if m < min_v:
                         min_v = m
                         qx = i
                         qy = j
                     self.put_symbol(i, j, EMPTY_SYMBOL, c_board)
-        return (min_v, qx, qy)
+        return min_v, qx, qy
 
-    #проверка правильности введенных игроком координат
+    # проверка правильности введенных игроком координат
     def valid_coord(self, symbol, human, *coord):
         if human:
             try:
@@ -216,7 +214,7 @@ class Player:
         self.board = board
         self.symbol = symbol
 
-    #ход игрока, отправка символа игрока на доску
+    # ход игрока, отправка символа игрока на доску
     def p_move(self):
         rez = False
         while not rez:
@@ -228,7 +226,7 @@ class AIPlayer:
         self.board = board
         self.symbol = symbol
 
-    #ход АИ(мин-макс)
+    # ход АИ(мин-макс)
     def p_move(self):
         print('---Ход ИИ---')
         c_board = self.board.board_copy()
@@ -239,7 +237,7 @@ class AIPlayer:
 class Game:
     players = []
 
-    #обработка ввода правильных цифровых значений
+    # обработка ввода правильных цифровых значений
     def valid_input_dig(self, text, n=0):
         while True:
             vvod = input(text)
@@ -251,7 +249,7 @@ class Game:
                 elif n == 2:
                     print('Введите число игроков 2 и больше!')
 
-    #обработка ввода правильных буквенных ответов на диалоги
+    # обработка ввода правильных буквенных ответов на диалоги
     def valid_input_let(self, text, zn1, zn2):
         while True:
             vvod = input(text + '"' + zn1 + '" или "' + zn2 + '": ')
@@ -260,7 +258,7 @@ class Game:
             else:
                 print('Введите ' + '"' + zn1 + '" или "' + zn2 + '"!')
 
-    #основная конфигурация игры
+    # основная конфигурация игры
     def config(self):
         n = self.valid_input_dig('Введите размер поля N*N: ')
         m = self.valid_input_dig('Введите длину выигрышной линии M: ')
@@ -291,23 +289,24 @@ class Game:
             game.add_players(pl)
             print('Первый игрок ставит "X" ')
             for i in range(col_players - 1):
-                symbol = input(f'Введите символ игрока {i+2} : ')
+                symbol = input(f'Введите символ игрока {i + 2} : ')
                 pl = Player(symbol, board)
                 game.add_players(pl)
         game.start(board)
 
-    #добавление игроков
+    # добавление игроков
     def add_players(self, player):
         self.players.append(player)
 
-    #старт игры
+    # старт игры
     def start(self, board):
-        board.viev_board()
+        board.view_board()
         while True:
             for player in self.players:
                 player.p_move()
-                board.viev_board()
+                board.view_board()
                 board.end_game()
+
 
 if __name__ == '__main__':
     game = Game()
