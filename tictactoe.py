@@ -5,13 +5,13 @@ EMPTY_SYMBOL = ' '
 
 class Board:
 
-    def __init__(self, n, m):
+    def __init__(self, n: int, m: int):
         self.n = n
         self.m = m
         self.board = [[EMPTY_SYMBOL] * n for i in range(n)]
 
     # отображение игровой доски в консоли
-    def view_board(self, *board):
+    def view_board(self, *board: list):
         if len(board) == 0:
             board = self.board
         else:
@@ -34,14 +34,14 @@ class Board:
             exit()
 
     # подсчитываем количество определенных символов подряд в списке всех диагоналей
-    def count_symbol_diag(self, list_diag):
+    def count_symbol_diag(self, list_diag: list) -> str:
         for diag in list_diag:
             rez = self.count_symbol_list(diag)
             if rez:
                 return rez
 
     # подсчитываем количество одинаковых символов подряд в списке
-    def count_symbol_list(self, list_symbol):
+    def count_symbol_list(self, list_symbol: list) -> str:
         count = 1
         for i in range(len(list_symbol) - 1):
             if list_symbol[i] != EMPTY_SYMBOL:
@@ -53,21 +53,21 @@ class Board:
                     count = 1
 
     # пподсчитываем количество определенных символов подряд по строкам
-    def is_win_row(self, board):
+    def is_win_row(self, board: list) -> str:
         for i in range(self.n):
             rez = self.count_symbol_list(board[i])
             if rez:
                 return rez
 
     # подсчитываем количество одинаковых символов подряд по столбцам
-    def is_win_column(self, board):
+    def is_win_column(self, board: list) -> str:
         for i in range(self.n):
             rez = self.count_symbol_list([col[i] for col in board])
             if rez:
                 return rez
 
     # подсчитываем количество одинаковых символов подряд по диагоналям
-    def is_win_diag(self, board):
+    def is_win_diag(self, board: list) -> str:
         # если n = m смотрим только основную и побочную диагональ
         if self.n == self.m:
             m_diag = []
@@ -98,7 +98,7 @@ class Board:
                     return rez_up
 
     # основная проверка на выйгрыш
-    def is_win(self, board):
+    def is_win(self, board: list):
         row = self.is_win_row(board)
         col = self.is_win_column(board)
         diag = self.is_win_diag(board)
@@ -113,21 +113,21 @@ class Board:
         return EMPTY_SYMBOL
 
     # размещение символа на игровой доске
-    def put_symbol(self, x, y, symbol, board):
+    def put_symbol(self, x: int, y: int, symbol: str, board: list):
         board[x][y] = symbol
 
     # проверка клетки на наличие символов
-    def is_empty(self, x, y, board):
+    def is_empty(self, x: int, y: int, board: list) -> bool:
         if board[x][y] == EMPTY_SYMBOL:
             return True
 
     # получение копии игровой доски
-    def board_copy(self):
+    def board_copy(self) -> list:
         c_board = deepcopy(self.board)
         return c_board
 
     # получаем список кординат свободных клеток
-    def count_empty_cells(self, board):
+    def count_empty_cells(self, board: list) -> list:
         count = []
         for i in range(self.n):
             for j in range(self.n):
@@ -136,7 +136,7 @@ class Board:
         return count
 
     # максимизация для ai
-    def max(self, ai_symbol, c_board):
+    def max(self, ai_symbol: str, c_board: list) -> tuple:
         if ai_symbol == 'X':
             pl_symbol = 'O'
         else:
@@ -162,7 +162,7 @@ class Board:
         return max_v, px, py
 
     # минимизация для игрока - человека
-    def min(self, pl_symbol, c_board):
+    def min(self, pl_symbol: str, c_board: list) -> tuple:
         if pl_symbol == 'X':
             ai_symbol = 'O'
         else:
@@ -188,7 +188,7 @@ class Board:
         return min_v, qx, qy
 
     # проверка правильности введенных игроком координат
-    def valid_coord(self, symbol, human, *coord):
+    def valid_coord(self, symbol: str, human: bool, *coord: int):
         if human:
             try:
                 x, y = input('Введите координаты (X,Y) - куда поставим: ' + symbol + '? ').split()
@@ -210,7 +210,7 @@ class Board:
 
 
 class Player:
-    def __init__(self, symbol, board):
+    def __init__(self, symbol: str, board: Board):
         self.board = board
         self.symbol = symbol
 
@@ -222,7 +222,7 @@ class Player:
 
 
 class AIPlayer:
-    def __init__(self, symbol, board):
+    def __init__(self, symbol: str, board: Board):
         self.board = board
         self.symbol = symbol
 
@@ -238,7 +238,7 @@ class Game:
     players = []
 
     # обработка ввода правильных цифровых значений
-    def valid_input_dig(self, text, n=0):
+    def valid_input_dig(self, text: str, n: int = 0) -> int:
         while True:
             vvod = input(text)
             if vvod.isdigit() and int(vvod) >= n:
@@ -250,7 +250,7 @@ class Game:
                     print('Введите число игроков 2 и больше!')
 
     # обработка ввода правильных буквенных ответов на диалоги
-    def valid_input_let(self, text, zn1, zn2):
+    def valid_input_let(self, text: str, zn1: str, zn2: str) -> str:
         while True:
             vvod = input(text + '"' + zn1 + '" или "' + zn2 + '": ')
             if vvod.isalpha() and (vvod == zn1 or vvod == zn2):
@@ -295,11 +295,11 @@ class Game:
         game.start(board)
 
     # добавление игроков
-    def add_players(self, player):
+    def add_players(self, player: Player):
         self.players.append(player)
 
     # старт игры
-    def start(self, board):
+    def start(self, board: Board):
         board.view_board()
         while True:
             for player in self.players:
